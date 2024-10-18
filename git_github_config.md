@@ -3,6 +3,7 @@
 ## 安装
 
 ```
+sudo apt-get update
 sudo apt-get install git
 ```
 
@@ -10,7 +11,7 @@ sudo apt-get install git
 
 此用户名和邮箱是git提交代码时用来显示你身份和联系方式的，并不是github用户名和邮箱
 
-```
+```shell
 git config --global user.name "YOUR_NAME"
 
 git config --global user.email "YOUR_EMAIL"
@@ -18,20 +19,47 @@ git config --global user.email "YOUR_EMAIL"
 
 example
 
-```
-git config --global user.name "CodeAlan"
+```shell
+git config --global user.name "xxhfln"
 
-git config --global user.email "2546379375@qq.com"
+git config --global user.email "1564781600@qq.com"
 
 ```
 
 检查配置信息
 
-```
+```shell
 git config --global --list
 
 press q to quit
 ```
+
+
+
+## 创建远程仓库并推送
+
+首次提交操作：
+
+```shell
+git init #本地仓库初始化
+git remote add origin <你的远程仓库链接> # 链接远程仓库
+# 例如 git remote add origin https://github.com/xxhfln/Ubuntu_ROS_NOTE.git
+git add . 
+git commit -m "你对本次提交的内容的描述"
+git push -u origin main
+```
+
+非首次提交：
+
+```sh
+git add . 
+git commit -m "你对本次提交的内容的描述"
+git push origin main
+```
+
+
+
+
 
 ## git push/pull 鉴权失败
 
@@ -51,13 +79,17 @@ tips:输入password时页面不会有任何反应
 
 重新git push/pull 输入username 和 token
 
+**执行这步之前，最好执行** `git config --global credential.helper store `**，记录用户密码，之后便可免密支付**
+
+
+
 ## Https配置免密登录
 
 每次git push/pull时都要输入username password
 
 在shell中输入
 
-```
+```shell
 git config --global credential.helper store
  
 git pull /git push
@@ -71,7 +103,7 @@ git pull /git push
 
 shell中输入下列指令，生成公钥
 
-```
+```sh
 ssh-keygen -t rsa -C "YOUR_EMAIL"
 ```
 
@@ -91,13 +123,13 @@ Key：将ssh对应目录下**id_rsa.pub**中内容粘贴进去
 
 回到shell检查配置是否成功：
 
-```
+```sh
 ssh -T git@github.com
 ```
 
 出现successfully就成功了
 
-```
+```sh
 Hi <USERNAME>! You've successfully authenticated, but GitHub does not provide shell access.
 
 ```
