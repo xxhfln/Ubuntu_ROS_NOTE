@@ -29,7 +29,7 @@ sudo apt-get install clangd
 
 在根目录下建立`.vscode`文件夹，创建`settings.json`文件。如下图
 
-![](docs\Vscode配置\1.png)
+![](.\docs\Vscode配置\1.png)
 
 `settings.json`文件内容如下
 
@@ -104,7 +104,7 @@ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .. -G 'Unix Makefiles'
 
 之后在build目录下就会生成对应的compile_commands.json,格式如下。**请务必确保存在compile_commands.json文件，这是clangd补全依赖文件，否则会失效**。
 
-![](docs\Vscode配置\2.png)
+![](.\docs\Vscode配置\2.png)
 
 重启Vscode即可
 
