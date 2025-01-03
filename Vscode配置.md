@@ -95,6 +95,12 @@ sudo apt-get install clangd
 
 ## 生成compile_commands.json文件
 
+项目文件夹下新建build文件夹
+
+```sh
+mkdir build
+```
+
 确保项目能够正常编译的前提下
 
 ```sh
@@ -109,4 +115,200 @@ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .. -G 'Unix Makefiles'
 重启Vscode即可
 
 
+
+# 添加CMake
+
+在项目根目录新建文件`CMakeLists.txt`（不是src目录），在`CMakeLists.txt`中输入：
+
+```cmake
+cmake_minimum_required(VERSION 3.26)
+project(main)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Fix issues in MSVC
+if (MSVC)
+    add_compile_options("/utf-8")
+endif ()
+
+# Find all file
+file(GLOB_RECURSE SOURCES src/*.h src/*.hpp src/*.cpp)
+
+# Compile to a executable
+add_executable(${PROJECT_NAME} ${SOURCES})
+```
+
+
+
+
+
+# 代码格式化
+
+推荐使用`clang-format`进行代码格式化。在项目根目录，放置一个名为`.clang-format`的文件，里面存储代码格式化的配置信息。你可以使用VSCode代码格式插件进行代码格式化。
+
+以下是推荐的配置：
+
+```yaml
+---
+Language: Cpp
+BasedOnStyle: LLVM
+AccessModifierOffset: -4
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignOperands: false
+AlignTrailingComments: false
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: None
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+BraceWrapping: 
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: false
+  BeforeWhile: true
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakBeforeBraces: Custom
+BreakConstructorInitializers: AfterColon
+BreakConstructorInitializersBeforeComma: false
+ColumnLimit: 120
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+IncludeCategories: 
+  - Regex: '^<.*'
+    Priority: 1
+  - Regex: '^".*'
+    Priority: 2
+  - Regex: '.*'
+    Priority: 3
+IncludeIsMainRegex: '([-_](test|unittest))?$'
+IndentCaseLabels: true
+IndentWidth: 4
+InsertNewlineAtEOF: true
+MacroBlockBegin: ''
+MacroBlockEnd: ''
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: All
+SpaceInEmptyParentheses: false
+SpacesInAngles: false
+SpacesInConditionalStatement: false
+SpacesInCStyleCastParentheses: false
+SpacesInParentheses: false
+TabWidth: 4
+...
+```
+
+## 静态检查
+
+推荐使用`clang-tidy`进行静态检查。在项目根目录，放置一个名为`.clang-tidy`的文件，里面存储代码格式化的配置信息。
+
+以下是推荐的配置：（有红色波浪线报错是正常的，不用管）
+
+```yaml
+---
+Checks: '-*,
+  mpi-*,
+  bugprone-*,
+  -bugprone-switch-missing-default-case,
+  -bugprone-signal-handler,
+  -bugprone-narrowing-conversions,
+  -bugprone-redundant-branch-condition,
+  -bugprone-exception-escape,
+  -bugprone-multiple-new-in-one-expression,
+  -bugprone-unchecked-optional-access,
+  -bugprone-shared-ptr-array-mismatch,
+  -bugprone-implicit-widening-of-multiplication-result,
+  -bugprone-signed-char-misuse,
+  -bugprone-inc-dec-in-conditions,
+  -bugprone-incorrect-enable-if,
+  -bugprone-unhandled-exception-at-new,
+  -bugprone-optional-value-conversion,
+  -bugprone-multi-level-implicit-pointer-conversion,
+  -bugprone-unsafe-functions,
+  -bugprone-infinite-loop,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-unique-ptr-array-mismatch,
+  -bugprone-non-zero-enum-to-bool-conversion,
+  -bugprone-not-null-terminated-result,
+  -bugprone-standalone-empty,
+  -bugprone-stringview-nullptr,
+  cert-err52-cpp,
+  cert-err60-cpp,
+  cert-err34-c,
+  cert-str34-c,
+  cert-dcl21-cpp,
+  cert-msc50-cpp,
+  cert-msc51-cpp,
+  cert-dcl58-cpp,
+  cert-flp30-c,
+  cppcoreguidelines-pro-type-member-init,
+  cppcoreguidelines-slicing,
+  cppcoreguidelines-interfaces-global-init,
+  cppcoreguidelines-pro-type-static-cast-downcast,
+  cppcoreguidelines-narrowing-conversions,
+  google-default-arguments,
+  google-runtime-operator,
+  google-explicit-constructor,
+  hicpp-multiway-paths-covered,
+  hicpp-exception-baseclass,
+  misc-unconventional-assign-operator,
+  misc-misplaced-const,
+  misc-new-delete-overloads,
+  misc-non-copyable-objects,
+  misc-throw-by-value-catch-by-reference,
+  misc-uniqueptr-reset-release,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  -modernize-avoid-c-arrays,
+  -modernize-use-constraints,
+  -modernize-type-traits,
+  -modernize-use-std-print,
+  -modernize-use-using,
+  -modernize-use-default-member-init,
+  -modernize-macro-to-enum,
+  openmp-use-default-none,
+  performance-*,
+  -performance-noexcept-swap,
+  -performance-noexcept-destructor,
+  -performance-enum-size,
+  -performance-no-int-to-ptr,
+  -performance-avoid-endl,
+  portability-simd-intrinsics,
+  readability-*,
+  -readability-redundant-preprocessor,
+  -readability-named-parameter,
+  -readability-function-size,
+  -readability-simplify-boolean-expr,
+  -readability-identifier-length,
+  -readability-duplicate-include,
+  -readability-magic-numbers,
+  -readability-braces-around-statements,
+  -readability-redundant-member-init,
+  -readability-suspicious-call-argument,
+  -readability-qualified-auto,
+  -readability-isolate-declaration,
+  -readability-uppercase-literal-suffix,
+  -readability-container-data-pointer,
+  -readability-else-after-return,
+  -readability-redundant-access-specifiers,
+  -readability-avoid-unconditional-preprocessor-if,
+  -readability-function-cognitive-complexity,
+  -readability-operators-representation,
+  -readability-implicit-bool-conversion,
+  -readability-identifier-naming,
+  -readability-reference-to-constructed-temporary,
+  -*-math-missing-parentheses'
+```
 
